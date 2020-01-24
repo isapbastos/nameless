@@ -3,7 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
-const sha1 = require('sha1');
+const sha1 = require("sha1");
 
 const app = express();
 
