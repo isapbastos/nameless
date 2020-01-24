@@ -12,16 +12,18 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function(request, response) {
-  var x1 = request.query.x1; //idpublica
-  var x2 = request.query.x2; //tsta
-  var x3 = request.query.x3; //body
-  var x4 = 654321; //idprivada
-  var hash = sha1(x2+x3+x4);
-  if(hash==request.hash){
-  console.log("ok");
+  var x1 = request.query.x1; //tsta
+  var x2 = request.query.x2; //body
+  var x3a = request.query.x3a; //idpublica
+  var x3b = JSON.stringify(x3a).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90');
+  
+  var x4 = request.query.x4;
+  var hash = sha1(x1+x2+x3b);
+  if(x4==hash){
+  console.log("SUCESSO");
 }
  else {
-   console.log("ERROR");
+   console.log("SAI FORA");
  }
  response.send("EIDRO");
     });
