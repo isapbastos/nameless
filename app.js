@@ -4,6 +4,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
 const sha1 = require("sha1");
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+
 
 const app = express();
 
@@ -30,11 +39,8 @@ app.get('/', function(request, response) {
   }
 
   });
- 
- 
 
-
-app.post("/signup", function(req, res) {
+ app.post("/signup", function(req, res) {
   var firstName = req.body.fName;
   var lastName = req.body.lName;
   var email = req.body.email;
@@ -105,7 +111,8 @@ app.post("/signup", function(req, res) {
     "Authorization": "isapbastos 1b99f508aa0c0f767d582906210d3000-us5"
   },
 body: jsonData
- } });
+ };
+});
 
 /*
   request(options, function(error, response, body){
@@ -128,6 +135,11 @@ app.post("/failure", function(req, res){
 app.listen(process.env.PORT || 3000, function() {
   console.log("Server is running in port 3000!");
 });
+
+https.createServer(options, function (req, res) {
+  res.writeHead(200);
+  res.end("Server is running in port 8000!\n");
+}).listen(8000);
 
 //API key
 //1b99f508aa0c0f767d582906210d3000-us5
