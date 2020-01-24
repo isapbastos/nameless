@@ -12,21 +12,25 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function(request, response) {
-  var x1 = request.query.x1; //tsta
+  var x1 = request.query.x1; //timeStamp
   var x2 = request.query.x2; //body
   var x3a = request.query.x3a; //idpublica
   var x3b = JSON.stringify(x3a).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90');
   
   var x4 = request.query.x4;
   var hash = sha1(x1+x2+x3b);
+  
   if(x4==hash){
-  console.log("SUCESSO");
-}
- else {
-   console.log("SAI FORA");
- }
- response.send("EIDRO");
-    });
+    response.send("SUCESSO");
+    console.log("SUCESSO");
+  }
+  else {
+  response.send("SAI FORA");
+  console.log("SAI FORA");
+  }
+
+  });
+ 
  
 
 
@@ -101,8 +105,9 @@ app.post("/signup", function(req, res) {
     "Authorization": "isapbastos 1b99f508aa0c0f767d582906210d3000-us5"
   },
 body: jsonData
-  };
+ } });
 
+/*
   request(options, function(error, response, body){
     if (error) {
       res.sendFile(__dirname + "/failure.html");
@@ -113,8 +118,8 @@ body: jsonData
           res.sendFile(__dirname + "/failure.html");
         }
       }
-});
-});
+    });
+  });*/
 
 app.post("/failure", function(req, res){
   res.redirect("/");
