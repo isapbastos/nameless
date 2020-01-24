@@ -23,6 +23,7 @@ app.get('/', function(request, response) {
  else {
    console.log("ERROR");
  }
+ response.send("EIDRO");
     });
  
 
