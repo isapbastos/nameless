@@ -13,13 +13,13 @@ body {
   }
   
   .form-signin {
-    width: 100%;
-    max-width: 330px;
+    width: 90%;
+    max-width: 300px;
     padding: 15px;
     margin: auto;
   }
   .form-signin .checkbox {
-    font-weight: 400;
+    font-weight: 270;
   }
   .form-signin .form-control {
     position: relative;
