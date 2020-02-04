@@ -22,7 +22,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 mongoose.connect("mongodb+srv://admin-Isadora:431419BttF@cluster0-babnh.mongodb.net/eidro", {useNewUrlParser: true});//conecta o app ao BD do cloud mongodb
-mongoose.connect("mongodb://localhost:27017/testdb"); //conecta o app ao BD local
+//mongoose.connect("mongodb://localhost:27017/testdb"); //conecta o app ao BD local
 mongoose.set('useFindAndModify', false); // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`, by default, you need to set it to false.
 const userSchema = new mongoose.Schema ({
     idPublica: String, 
