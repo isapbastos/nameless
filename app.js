@@ -86,10 +86,11 @@ app.get("/requisicao", function( req, res){
     let privado = (!isNaN(publico)) ? JSON.stringify(publico).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90') : null; //esse último retorna null, por que? rearranjar essa função
     let tmstp = req.query.tmstp; //timestamp
     let body =  req.query.body; //body
-            //create a new list
+
                
-    let hashGerado = sha1(privado+tmstp+body); //função para gerar hash sha1
+    let hashGerado = sha1(tmstp+body+privado); //função para gerar hash sha1
     let hash = req.query.hash;
+    console.log("publico", publico);
     console.log("privado:",privado);
     console.log("tmstp:",tmstp);
     console.log("body:",body);
@@ -111,7 +112,7 @@ app.get("/requisicao", function( req, res){
 
         else
         { 
-            if((hash==hashGerado)&&(jsonTeste.hasOwnProperty('NUMBER_OF_RESETS'))){ //comparacao do hash. Se igual, aceita a mensagem, caso contrario rejeit
+            if((hash==hashGerado)&&(jsonTeste.hasOwnProperty('NUMBER_OF_RESETS'))){ //comparacao do hash. Se igual, aceita a mensagem, caso contrario rejeita
             const json2 = {
                 "PARAM":[
                     {"TMSTP": tmstp},
