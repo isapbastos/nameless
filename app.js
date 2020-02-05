@@ -12,7 +12,7 @@ const app = express();
 const PORTA_OKAY = 200;
 const PORTA_LOCAL_HTTP = 3000;
 const PORTA_LOCAL_HTTPS = 8000;
-const MSG_REJEITA_CONEXAO = "SAI FORA";
+const MSG_REJEITA_CONEXAO = "VTNC";
 const MSG_CONEXAO_ACEITA = "SUCESSO";
 const options = {
     key: fs.readFileSync('key.pem'), //SSL certificate para criar um servidor htttps
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema ({
 
 const User = mongoose.model("User", userSchema);
 
-const isa = new User ({
+/* const isa = new User ({
     idPublica: '123456',
     idPrivada: '654321',
     medicoes: [{_id: '123456781', 
@@ -58,10 +58,9 @@ const hugo = new User ({
 });
 console.log(isa);
 console.log(hugo);
-const defaultUsers = [isa, hugo]; 
+const defaultUsers = [isa, hugo]; */
 
 const listSchema = {
-  name:String,
   users: [userSchema]
 };
 
@@ -82,13 +81,63 @@ app.get("/", function(request, res) { //retorna os usuários declarados (default
         }
     }); 
 });
- 
-app.get("/:customListName", function( req, res){
+app.get("/requisicao", function( req, res){
+    let publico = req.query.publico; //idPublica
+    let privado = (!isNaN(publico)) ? JSON.stringify(publico).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90') : null; //esse último retorna null, por que? rearranjar essa função
+    let tmstp = req.query.tmstp; //timestamp
+    let body =  req.query.body; //body
+            //create a new list
+               
+    let hashGerado = sha1(privado+tmstp+body); //função para gerar hash sha1
+    let hash = req.query.hash;
+    console.log("privado:",privado);
+    console.log("tmstp:",tmstp);
+    console.log("body:",body);
+    console.log("hashGerado:",hashGerado);
+    console.log("hash:",hash);
+    //aspas dentro de aspas precisa da contrabarra
+    console.log("body",body);
+    var jsonTeste = body;
+    //if( (jsonTeste !== undefined) && (jsonTeste !== null) /*&& (jsonTeste.constructor == Object)*/)
+    try{ 
+        jsonTeste = JSON.parse(body); 
+   
+        if((hash==hashGerado)&&(jsonTeste.hasOwnProperty('GET'))){ //comparacao do hash. Se igual, aceita a mensagem, caso contrario rejeita
+            const json = {"PARAM":[{"TMSTP": tmstp},
+                            {"GET": "NUMBER_OF_RESETS"},
+                            {"HASH": hashGerado}]} ;
+            res.send(json);                     
+        }            
+
+        else
+        { 
+            if((hash==hashGerado)&&(jsonTeste.hasOwnProperty('NUMBER_OF_RESETS'))){ //comparacao do hash. Se igual, aceita a mensagem, caso contrario rejeit
+            const json2 = {
+                "PARAM":[
+                    {"TMSTP": tmstp},
+                    {"OKAY": "OKAY"},
+                    {"HASH": hashGerado}]} ;
+            console.log(json2);
+            res.send(json2);
+            }
+            else {
+                res.send(MSG_REJEITA_CONEXAO);
+                console.log(MSG_REJEITA_CONEXAO);
+            }
+        }
+    }
+    catch(error)
+    {
+        res.send("error"); 
+    }
+});
+
+/* app.get("/:customListName", function( req, res){
     const customListName = _.capitalize(req.params.customListName);
-    let x1a = req.query.x1a; //idPublica
-    let x1b = (!isNaN(x1a)) ? JSON.stringify(x1a).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90') : null; //esse último retorna null, por que? rearranjar essa função
-    let x2 = req.query.x2; //timestamp
-    let x3 =  req.query.x3; //leitura
+    let publico = req.query.publico; //idPublica
+    let privado = (!isNaN(publico)) ? JSON.stringify(publico).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90') : null; //esse último retorna null, por que? rearranjar essa função
+    let tmstp = req.query.tmstp; //timestamp
+    let  leitura=  req.query.leitura; //leitura
     List.findOne({name: customListName}, function(err, foundList){
         if(!err){ //se não tiver erros
             if(!foundList){
@@ -96,17 +145,17 @@ app.get("/:customListName", function( req, res){
                 const list = new List({
                     name: customListName,
                     users: {
-                        idPublica: req.query.x1a,
-                        idPrivada: (!isNaN(x1a)) ? JSON.stringify(x1a).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90') : null, //faz a conversão da idpública para
+                        idPublica: req.query.publico,
+                        idPrivada: (!isNaN(publico)) ? JSON.stringify(publico).replace('"123456"', '654321').replace('"abe854"', 'fk9W21').replace('"anr5kr"', 'f93jc2').replace('"dnuek2"', '29jd90') : null, //faz a conversão da idpública para
                         medicoes: [{_id: Math.floor(Math.random() * 10000000), //o banco só aceita os dados uma vez, como enviar várias medicoes para o mesmo usuário?
-                                    timestamp: req.query.x2,
-                                    leitura: req.query.x3}]
+                                    timestamp: req.query.tmstp,
+                                    leitura: req.query.leitura}]
                             }
                 });
-                let hash = sha1(x1b+x2+x3); //função para gerar hash sha1
-                console.log(hash);
-                let x4 = req.query.x4;
-                if(x4==hash){ //comparacao do hash. Se igual, aceita a mensagem, caso contrario rejeita
+                let hashGerado = sha1(privado+tmstp+leitura); //função para gerar hash sha1
+                console.log(hashGerado);
+                let hash = req.query.hash;
+                if(hash==hashGerado){ //comparacao do hash. Se igual, aceita a mensagem, caso contrario rejeita
                     console.log(MSG_CONEXAO_ACEITA);
                     list.save();
                     res.send(MSG_CONEXAO_ACEITA);
@@ -122,7 +171,7 @@ app.get("/:customListName", function( req, res){
             }
         }
     });
-});
+}); */
 
 app.post("/delete", function(req, res){//deleta o dado ao clicar no checkbox
     const checkedUserId = req.body.checkbox;
@@ -153,6 +202,6 @@ app.listen(port, function() {
 });
 https.createServer(options, function (req, res) {
     res.writeHead(PORTA_OKAY);
-    console.log("Server is running in port 8000!\n");
+   console.log("Server is running in port 8000!\n");
 }).listen(PORTA_LOCAL_HTTPS);
 
