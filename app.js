@@ -4,23 +4,27 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
-const https = require('https');
-const fs = require('fs');
+const https = require("https");
+const fs = require("fs");
 const sha1 = require("sha1");
 const request = require('request');
 const app = express();
+app.use(express.static("public"));
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 const PORTA_OKAY = 200;
 const PORTA_LOCAL_HTTP = 3000;
 const PORTA_LOCAL_HTTPS = 8000;
 const MSG_REJEITA_CONEXAO = "VTNC";
 const MSG_CONEXAO_ACEITA = "SUCESSO";
+
 const options = {
     key: fs.readFileSync('key.pem'), //SSL certificate para criar um servidor htttps
-    cert: fs.readFileSync('cert.pem')
+    cert: fs.readFileSync('key-cert.pem')
 };
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static("public"));
+
 mongoose.connect("mongodb+srv://admin-Isadora:431419BttF@cluster0-babnh.mongodb.net/eidro", {useNewUrlParser: true});//conecta o app ao BD do cloud mongodb
 //mongoose.connect("mongodb://localhost:27017/testdb"); //conecta o app ao BD local
 mongoose.set('useFindAndModify', false); // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`, by default, you need to set it to false.
@@ -194,15 +198,12 @@ app.post("/delete", function(req, res){//deleta o dado ao clicar no checkbox
     }
 });
 
-let port = process.env.PORT;
-if(port == null || port == "") {
-  port = PORTA_LOCAL_HTTP;
-}
-app.listen(port, function() {
-  console.log("Server is running in port 3000!");
+app.listen(process.env.PORT || PORTA_LOCAL_HTTP, function() {
+    console.log("Server is running in port 3000!");
 });
-https.createServer(options, function (req, res) {
+https.createServer(options, (req, res) => {
     res.writeHead(PORTA_OKAY);
-   console.log("Server is running in port 8000!\n");
+    res.end('EIDRO\n');
+    console.log("Server is running in port 8000!\n");
 }).listen(PORTA_LOCAL_HTTPS);
 
